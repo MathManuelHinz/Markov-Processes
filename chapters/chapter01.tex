@@ -1,1 +1,120 @@
-\chapter{Test}
+\chapter{Continuous time Markov chains}
+
+Two motivating examples:
+
+%TODO
+
+\section{Markov chain, transition function, infinitesimal description}
+
+We have a \dhighlight{countable state space \(\cS\)} and define
+\begin{itemize}
+    \item \(\Omega=\{\text{right-continuous functions }\omega:\R_+\to\cS \text{ with finitely many jumps in any finite time intervals}\}\) 
+    \item \(\sigma\)-algebra \(\cF\coloneqq \sigma(\{\omega\to\omega(t)\text{ which is measurable }\forall t\geq 0\})\)\marginnote{measurable w.r.t.?}
+    \item time shift operator: \((\theta_s \omega)(t)\coloneqq \omega(s+t)\)
+\end{itemize}
+
+\begin{definition}\label{def:1.1}
+    Denote \(X(t,\omega)\coloneqq \omega(t)\). 
+    Assume we have a collection of probability measures \(\{\bP^x,x\in\cS\}\) on \((\Omega,\cF)\),
+    a right-continuous filtration \(\{\cF_t,t\geq 0\}\) on \((\Omega,\cF)\). 
+    \(X\) is a \dhighlight{continuous time Markov chain (MC)} if 
+    \begin{enumerate}
+        \item[(a)] \(X\) is adapted to \(\{\cF_t,t\geq 0\}\)
+        \item[(b)] \dhighlight{Initial condition:} \(\bP^x(X(0)=x)=1\)
+        \item[(c)] \dhighlight{Markov property:} \(\forall x\in \cS,Y \text{ measurable function on }\Omega,s\geq 0\):\[\bE^x\left(Y\circ \theta_s\mid \cF_s\right)=\bE^{X(s)}(Y), \bP^x \as\]   
+    \end{enumerate}
+
+\end{definition}
+
+\begin{example*}
+    \(Y=\max_{0\leq t\leq 1} X(t)\to Y\circ \theta_s = \max_{s\leq t\leq s+1} X(t)\)
+\end{example*}
+
+\dhighlight{Here:} Time homogenous processes! 
+
+\begin{definition}\label{def:1.2}
+    A \dhighlight{transition function} is function \(p_t(x,y),x,y\in\cS,t\geq 0\) s.t. 
+    \begin{enumerate}
+        \item[(a)] \dhighlight{Positivity:} \(p_t(x,y)\geq 0\)
+        \item[(b)] \dhighlight{Normalized:} \(\sum_{y\in\cS} p_t(x,y)=1\)\marginnote{We will see while constructing, that this part is tricky, might just be \(\leq 1\)}
+        \item[(c)] \dhighlight{Continuity:} \(\lim_{t\downarrow 0} p_t(x,x)=p_0(x,x)=1\)
+        \item[(d)] \dhighlight{Chapman-Kolmogorov equation:} \(\forall s,t\geq 0\) \(\forall x,y\in \S\):\[p_{s+t}(x,y)=\sum_{z\in\cS} p_s(x,z)p_t(z,y)\] 
+    \end{enumerate}
+\end{definition}
+
+Given a transition function, we can construct \(\bP^x\) as follows:
+
+\dhighlight{Finite dimensional distributions}, \(0<t_1<\dots<t_n\): 
+\begin{eqnarray*}
+    \bP^x(X(t_1)=x_1,X(t_2=x_2),\dots,X(t_n)=x_n)\coloneqq p_{t_1}(x,x_1)\cdot p_{t_2-t_1}(x_1,x_2)\cdot\dots\cdot p_{t_n-t_{n-1}(x_{n-1},x_n)}
+\end{eqnarray*}
+extend to full time \(\R_+\) by the Kolmogorov(-Daniell) extension theorem, where the consistency,\(\bP^x(X(t)=y)=p_t(x,y)\), 
+relations follow by the Chapman-Kolmogorov equation.
+
+\begin{example*}
+    \(0<t_2<\dots<t_n\)\marginnote{We are still in the same setting, therefore we use the same \(t_1\) as previously}
+    \begin{equation*}
+       \sum_{x_1\in\cS}\bP^x\left(X(t_1)=x_1,\dots,X(t_n)=x_n\right)=\bP^x\left(X(t_2)=x_2,\dots,X(t_n)=x_n\right)
+    \end{equation*}
+\end{example*}
+
+By modeling we often think at the basic biological/ physical properties of the system \(\to\)
+typically we have \textit{transition rates}, because for \( x\neq y: 
+\begin{cases}
+    p_\epsilon(x,y)=O(\epsilon),& p_\epsilon(x,x)=1-O(\epsilon)\\
+      p_0(x,y)=0,&p_0(x,x)=1
+\end{cases}
+\)
+\begin{definition}\label{def:1.3}
+    For a Markov chain \(X\) we define the \dhighlight{transition rates} from \(x\) to \(y\) (\(x\neq y\)) by:
+    \[\tilde{q}(x,y)=\coloneqq \frac{d}{dt}p_t(x,y)\mid_{t=0}\]
+\end{definition}
+
+\begin{definition}
+    A \dhighlight{\(Q\)-matrix (or generator)} is a collection of numbers \(\{q(x,y):x,y\in\cS\}\) s.t.:
+    \begin{enumerate}
+        \item[(a)] \(q(x,y)\geq 0\forall x\neq y\)
+        \item[(b)] \(\sum_{y\in\cS} q(x,y)=0\), Notation: \(c(x)\coloneqq q(x,x)=\sum_{y\in\cS\setminus\{x\}} q(x,y)\)\marginnote{\(c(x)\) is the rate of leaving site \(x\)}   
+    \end{enumerate}
+\end{definition}
+
+\begin{tcolorbox}[enhanced,breakable,
+	title=Warning,colback=red!20!white]
+    It is not automatic that transition rates gives a \(Q\)-matrix
+    For instance: \(\tilde{q}(x,y)=\infty\)
+\end{tcolorbox}
+
+For \highlight{finite} state space,
+    
+Markov chain \(\iff\) Transition function \(\iff\) \(Q\)-matrix
+
+
+\dhighlight{Goal:} Under which condition is the equivalence still true? 
+
+\section{Examples}
+
+\begin{example*}[Discrete to continuous MC]
+    \dhighlight{Given:} Markov chain \(Y\) in discrete time \(t\in\Z_+\), i.e. transition matrix \(P=(P(x,y))_{x,y\in\cS}\)
+    \[\bP(Y(n+1)=y\mid Y(n)=x)=P(x,y)\]
+    Consider a Poisson process(PP) with intensity \(1\), at each event time of the PP, there will be a jump of the 
+    continuous time MC \(X\). The jumps follow the discrete time MC \(Y\)
+
+    \(\implies p_t(x,y)=\sum_{n\geq 0}\frac{e^{-t}t^n}{n!}P^n(x,y)\)
+
+    in this case \(Q=P-1\)
+\end{example*}
+
+\begin{example*}[Finite $\cS$]
+    \(p_t(x,y)=\left(e^{tQ}(x,y)\right)\coloneqq \sum_{n\geq 0}\frac{t^n}{n!}Q^n(x,y)\) \marginnote{Here will be one of the main problems: If \(Q\) is finite / a normed operator, everything is well defined. Otherwise we have to use a different definition of the exponetial \dots}
+\end{example*}
+
+\begin{example*}[Birth and death processes]
+    \(\cS=\{0,1,\dots,\},X(t)=\text{Population size at time } t\). Then 
+    \begin{itemize}
+        \item \(q(k,k+1)=\rho_k, k\geq 0\)
+        \item  \(q(k+1,k)=\lambda_k,g\geq 1\)
+        \item \(q(k,k)=-\rho_k-\lambda_k\) with \(\lambda_0=0\)
+        \item which implies \(q(k,l)=0\forall |k-l|\geq 2\)
+    \end{itemize}
+    Depending on the choice of \(\rho_k,\lambda_k\) it is possible that the chain goes to \(\infty\) in finite time.
+\end{example*}
