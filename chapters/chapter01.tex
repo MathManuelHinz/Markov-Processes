@@ -118,3 +118,302 @@ Markov chain \(\iff\) Transition function \(\iff\) \(Q\)-matrix
     \end{itemize}
     Depending on the choice of \(\rho_k,\lambda_k\) it is possible that the chain goes to \(\infty\) in finite time.
 \end{example*}
+
+\beginlecture{02}{10.10.2024}
+\section{From MC to \(Q\)-matrices}
+
+\subsection{MC \(\to\) Transition functions}
+\begin{theorem}\label{thm:1.5}
+    Let \(X\) be a Markov chain. Then \(p_t(x,y)\coloneqq\bP^x(X(t)=y)\).
+    \begin{enumerate}
+        \item[(a)] \(p_t(x,y)\) is a transition function 
+        \item[(b)]\(p_t(x,y)\) determines uniquely \(\bP^x\)  
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    \dhighlight{(a):} Positivity and normalization follows by the properties of \(\bP^x\).
+    \(\tau\coloneqq \inf\{t\in\R_+\mid X(t)\neq X(0)\}\) is a.s. positive. \(p_t(x,x)\geq \bP^x(\tau>t)\), which 
+    implies \(1=p_0(x,x)\geq \lim_{t\downarrow 0}p_t(x,x)\geq \lim_{t\downarrow 0}\bP^x(\tau >t)=1\). 
+    
+    We still need to verify the Chapman-Kolmogorov equation:
+    Define \(Y=1_{X(t)=y}\implies Y\circ \theta_s=1_{X(t+s)=y}\) 
+    \begin{align*}
+        p_{s+t}(x,y) &=\bP^x(X(s+t)=y)=\bE^x\left(1_{X(s+t)=y}\right)\\
+        &=\bE^x\left(\bE^x(1_{X(s+t)=y}\mid \cF_s)\right)\\
+        &\stackrel{\text{MP}}{=}\bE^x\left(\bE^{X(s)\left(1_{X(t)=y}\right)}\right)\\
+        &=\sum_{z\in S}p_s(x,z)\underbrace{\bE^z\left(1_{X(t)=y}\right)}_{=p_t(z,y)}
+    \end{align*}
+    \dhighlight{(b):} By the Markov property \(\forall 0<t_1<\dots<t_n,x_1,\dots,x_n\in S\)
+    \begin{align*}
+        \bP^x\left(X(t_1)=x_1,\dots X(t_n)=x_n\right)=p_{t_1}(x_1,x_1)\cdot p_{t_2-t_1}(x_1,x_2)\cdot \dots\cdot p_{t_n-t_{n-1}}(x_{n-1},x_{n})
+    \end{align*}
+    using the Kolmogorov extension theorem  \(\bP^x\) is uniquely determined by \(p_t\).
+\end{proof}
+
+\subsection{Transition functions to \(Q\)-matrices}
+
+\begin{proposition}\label{prop:1.6}
+    Let \(p_t(x,y)\) be a transition function.
+    \begin{enumerate}
+        \item[(a)] \(\forall t\geq 0,x\in S,p_t(x,x)>0\)
+        \item[(b)] If \(p_t(x,x)=1\) for some \(t>0\), then \(p_s(x,x)=1\forall s\geq 0\)
+        \item[(c)] \(\forall x,y\in S, p_t(x,y)\) is uniformly continuous in \(t\), due to 
+        \[\vert p_{t+s}(x,y)-p_t(x,y)\vert\leq 1-p_{s}(x,x)\]
+    \end{enumerate}
+\end{proposition}
+
+\begin{remark}
+    \begin{enumerate}
+        \item[(a)] differs from the discrete time markov chain \(\to\) no issues of periodicity 
+        \item[(b)] The M.C. if it reaches site \(x\), stays forever in \(x\). \(x\) is an \dhighlight{absorbing state}
+    \end{enumerate}
+\end{remark}
+
+\begin{proof}
+    \dhighlight{(a):} Since \(\lim_{x\downarrow 0}p_t(x,x)=1\implies p_s(x,x)>0\) for \(s \in [0,t]\) for some small \(t\).
+    Therefore \(\forall s\in[0,t]:p_{t+s}(x,x)\stackrel{\text{C.Kolmogorov}}{\geq}p_t(x,x)p_s(x,x)>0\), which we can iterate to get the claim. 
+   
+    \dhighlight{(b):} \(p_{s+t}(x,x)=\sum_{z\in S} p_s(x,z)p_t(z,x)\leq p_s(x,x)p_t(x,x)+\underbrace{\sum_{z\neq x}p_s(x,z)}_{=1-p_s(x,x)}\cdot 1\)\marginnote{still good, since \(p_s(x,z)\) will be \(0\)}
+    Then \begin{align*}
+        p_{s+t}(x,x)\leq 1-\underbrace{p_s(x,x)}_{\stackrel{(a)}{\geq 0}}(1-p_t(x,x)).
+    \end{align*}
+    If \(p_{s+t}(x,x)=1\implies p_t(x,x)=1\). \(\forall v\in [t+s,2(t+s)]: p_v(x,x)\geq p_{\underbrace{v-(t+s)}_{\in [0,t+s]}}(x,x)p_{t+s}(x,x)=1\cdot 1=1\)
+    
+    \dhighlight{(c):} \begin{align*}
+        p_{s+t}(x,y)-p_t(x,y)&=\sum_{z\in S}p_s(x,z)p_t(s,y)-p_t(x,y)\\
+        &=\underbrace{(p_s(x,x)-1)p_t(x,y)}_{\leq 0}+\underbrace{\sum_{z\neq x}p_s(x,z)p_t(z,y)}_{\geq 0}
+    \end{align*}
+    Since \[|p_s(x,x)-1|p_t(x,y)\leq 1-p_s(x,x)\] and\[\sum_{z\neq x}p_s(x,z)\underbrace{p_t(z,y)}_{\leq 1}\leq 1-p_s(x,x)\]
+    \[\implies |p_{s+t}(x,y)-p_t(x,y)|\leq 1-p_s(x,y)\]
+\end{proof}
+
+\begin{theorem}\label{thm:1.8}
+    Let \(p_t(x,y)\) be a transition function. \begin{enumerate}
+        \item[(a)]\(\forall x\in S\) the right derivative \[\tilde{c}(x)=-\tilde{q}(x,x)=-\frac{d}{dt}p_t(x,x)\mid_{t=0}\in[0,\infty]\]
+        exists and \(p_t(x,x)\geq e^{-\tilde{c}(x)t},\forall t>0\)
+        \item[(b)] I \(tilde{c}<\infty\implies \forall y\neq x\), the right-derivative
+            \[\tilde{q}(x,y)\coloneqq \frac{d}{dt}p_t(x,y)\mid_{t=0}\in[0,\infty]\]
+            exists and \(\sum_{y\in S}\tilde{q}(x,y)\leq 0\) 
+        \item[(c)] If for some  \(x\in S,\tilde{c}(x)<\infty\) and \(\sum_{y\in S} \tilde{q}(x,y)=0\), then \(p_t(x,y)\) is \(C^1\) in time for this \(x\) and \(y\in S\).
+            Moreover, it satisfies the \dhighlight{Kolmogorov- backwards equation}: 
+            \begin{equation}\label{eq:kolmogorov_backwards}\frac{d}{dt}p_t(x,y)=\sum_{z\in S} \tilde{q}(x,z)p_t(z,y)\end{equation} 
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    \dhighlight{(a)} Let \(f(t)\coloneqq -\ln(p_t(x,x))\geq 0\). By \(p_{s+t}(x,x)\geq p_s(x,x)p_t(x,x)\) it follows 
+    \begin{align*}
+        f(t+s)\leq f(s)+f(t),
+    \end{align*}
+    the function \(f\) is subadditive, which implies \marginnote{In particular, the limit exists}\[\lim_{t\downarrow 0} \frac{f(t)}{t}=\sup_{t>0}\frac{f(t)}{t}\in[0,\infty]\]
+    \begin{align*}
+        \implies \lim_{t \downarrow 0}\frac{f(t)}{t}&=\frac{d}{dt}f(t)\mid_{t=0}=\frac{-\frac{d}{dt}p_t(x,x)}{\underbrace{p_t(x,x)}_{\to 1}}\mid_{t=0}=\tilde{c}(x)\\
+        \implies & \tilde{c}(x)\geq \frac{f(t)}{t}=-\frac{\ln p_t(x,x)}{t}\to p_t(x,x)\geq e^{-\tilde{c}(x)t}
+    \end{align*}
+
+    \dhighlight{(b)} by (a): \(1-p_t(x,x)\leq 1-e^{-\tilde{c}(x)t}\leq \tilde{c}(x)t\), which implies 
+    \begin{align*}
+        \sum_{y\neq x} p_t(x,y)\leq\tilde{c}(x)t.
+    \end{align*}
+    \begin{align*}
+    \implies \tilde{q}(x,y)\coloneqq \limsup_{t\downarrow 0} \frac{p_t(x,y)}{t}\in[0,\underbrace{\tilde{c}(x)}_{<\infty}]
+    \end{align*}
+    Let \(\delta>0,n\in\N\):
+    Let \(p_\delta=\{p_\delta(x,y)\}_{x,y\in S}\) be a discrete time chain.
+    \begin{align*}
+        p_{n\delta}(x,y)&\geq \sum_{k=0}^{n-1}\underbrace{p_{\delta}(x,x)^k}_{\geq p_\delta(x,x)^n\geq e^{-\tilde{c}(x)n\delta}}p_\delta(x,y)p_{(n-k-1)\delta}(y,y)\\
+        \implies&\frac{p_{n\delta}(x,y)}{n\delta}\geq \frac{p_{\delta(x,y)}}{\delta}e^{-\tilde{c}(x)n\delta}\cdot \inf_{0\leq s\leq n\delta}p_s(y,y)
+    \end{align*}
+
+    Take a subsequence of \(\delta\downarrow 0\) such that \(n\delta\to t\) and 
+    \(\lim_{\delta\downarrow 0 }\frac{p_{\delta}(x,y)}{\delta}=\tilde{q}(x,y)\)
+    \begin{align*}
+        \implies \liminf_{t\downarrow 0}\frac{p_t(x,y)}{t}\geq \tilde{q}(x,y)\cdot 1 \cdot 1
+    \end{align*}
+    which implies that the limit exists.
+    \begin{align*}
+        \sum_{y\neq x}\frac{p_t(x,y)}{t}&\leq \tilde{c}(x)\\
+        \tilde{c}(x)&\geq \liminf_{t\downarrow 0}\sum_{y\neq x}\frac{p_t(x,y)}{t}\stackrel{\text{Fatou}}{\geq}\sum_{y\neq x}\liminf_{t\downarrow 0}\frac{p_t(x,y)}{t}=\sum_{y\neq x}\tilde{q}(x,y)\\
+        &\implies \sum_y \tilde{q}(x,y)\leq 0
+    \end{align*}
+
+    \dhighlight{(c)} By Chapman-Kolmogorov:
+    \begin{align*}
+        \frac{p_{t+\epsilon}(x,y)-p_t(x,y)}{\epsilon}-\sum_{z}\tilde{q}(x,z)p_t(z,y)\\
+        =\sum_{z\in S}\underbrace{\left(\frac{p_\epsilon(x,z)-\overbrace{p_0(x,z)}^{\delta_{x,z}}}{\epsilon}-\tilde{q}(x,z)\right)}_{=(\star)}p_t(z,y)
+    \end{align*}
+    For all \(z:\lim_{\epsilon\to 0} (\star)=0\)
+
+    Take \(T\subset S\), \(|T|<\infty\implies \lim_{\epsilon\downarrow 0}\sum_{z\in T}(\star)\cdot p_t(z,y)=0\).
+    Let \(x\in T\). \begin{align*}&\sum_{z\notin T}\left\vert\frac{p_{\epsilon}(x,z)}{\epsilon}-\tilde{q}(x,z) \right\vert \underbrace{p_(z,y)}_{\leq 1}\\
+        &\leq \sum_{z\notin T} \frac{p_\epsilon(x,z)}{\epsilon}+\sum_{z\notin T}\tilde{q}(x,z)\stackrel{\sum \tilde{q(x,z)=0}}{=}\frac{1}{\epsilon}\left(1-\sum_{z\in T}p_\epsilon(x,z)\right)-\sum_{z\in T}\tilde{q}(x,z) 
+    \end{align*}
+    But \(\sum_x\tilde{q}(x,z)=0\stackrel{\epsilon\downarrow 0}{\to} - 2\sum_{z\in T}\tilde{q}(x,z)\stackrel{T\uparrow S}{\to}0\)
+\end{proof}
+
+\beginlecture{03}{15.10.2024}
+
+\begin{remark}
+    For M.C. also the \dhighlight{strong Markov property} holds:
+
+    Let \(\tau\) be a stopping time and \(Y:\R_+\times \Omega\mapsto Y_t(\omega)\footnote{\text{shorthand notation ...}}\) measurable, then
+    \[\bE^x(Y\circ\theta_{\tau}\mid \cF_t)=\bE^x(Y_\tau), \bP-\as\]
+    on the set \(\{\tau<\infty\}\).
+\end{remark}
+
+\begin{align*}
+    \frac{d}{dt}p_t(x,y)=\lim_{\epsilon\downarrow 0} \frac{p_{t+\epsilon}(x,y)-p_t(x,y)}{\epsilon}
+\end{align*}
+\marginnote{They are almost always equivalent. In computation one often uses the forward equation, in construction the backwards equation is preffered}
+using \(\sum_{z}p_t(x,z)p_\epsilon(z,y)\) instead of \(\sum_{z}p_\epsilon(x,z)p_t(z,y)\)
+we get the \dhighlight{Kolmogorov Forward Equation}\begin{equation}\label{eq:kolmogorov_forward}
+    \frac{d}{dt}p_t(x,y)=\sum_{z\in\cS}p_t(x,z)q(z,y)
+\end{equation}
+
+\section{From \(Q\)-matrix to the Markov Chains}
+
+Let \(Q=(q(x,y))_{x,y\in\cS}\) be a \(Q\)-matrix.
+
+\subsection{The backwards equation}
+
+\begin{proposition}\label{prop:1.12}
+    Let \(p_t(x,y)\) be a uniformly bounded function of \(x,y,t\), then (a) is equivalent to (b):
+    \begin{enumerate}
+        \item[(a)]\(p_t(x,y)\) is \(C^1\) in \(t\), satisfies the KBE\footnote{Kolmogorov Backwards Equation}, with initial condition \(p_0(x,y)=\delta_{x,y}\)
+        \item[(b)] \(p_t(x,y)\) is \(C^0\) in \(t\), and satisfies:\begin{equation}\label{eq:A}p_t(x,y)=\delta_{x,y}e^{-c(x)t}+\int_0^t ds e^{-c(x)(t-s)}\sum_{z\in \cS\setminus\{x\}}q(x,z)p_s(z,y)\end{equation}
+    \end{enumerate}
+\end{proposition}
+
+\begin{proof}
+    (a) \(\implies\) (b): KBE \(\iff\)
+    \begin{align*}
+        \frac{d}{dt}p_t(x,y)&=-c(x)p_t(x,y)+\sum_{z\in S\setminus\{x\}} q(x,z)p_t(z,y)\\
+        \implies\frac{d}{dt}\left(e^{c(x)t}p_t(x,y)\right)&=c(x)e^{c(x)t}p_t(x,y)+e^{c(x)t}\left(-c(x)p_t(x,y)+\sum_{z\neq x}q(x,z)p_t(z,y)\right)\\
+        &=e^{c(x)t}\sum_{z\neq x}q(x,z)p_t(z,y)\\
+        &\stackrel{\int_0^t}{=} e^{c(x)t}p_t(x,y)-p_0(x,y)=\int_0^te^{c(x)s}\sum_{z\neq x}q(x,z)p_s(z,y)
+    \end{align*}
+
+    (b) \(\implies\) (a): The RHS of the equation is \(C^1\) in \(t\). The initial condition is also satisfied. Taking the derivate yields
+    the \(\frac{d}{dt}p_t(x,y)=-c(x)p_t(x,y)+\sum_{z\in S\setminus\{x\}} q(x,z)p_t(z,y)\) which is equivalent to the KBE.
+\end{proof}
+
+We use proposition \ref{prop:1.12} to show existence of positive solution of the KBE. Idea: Use a \highlight{fixed point argument}:
+\begin{itemize}
+    \item \(p_t^{(0)}(x,y)=0\forall x,y\in\cS,t\geq 0\)
+    \item For \(n\geq 0: p_t^{(n+1)}(x,y)=\delta_{x,y}e^{c(x)t}+\int_{0}^t ds e^{-c(x)(t-s)}\sum_{z\neq x}q(x,z)p_s^{(n)}(z,y)\)
+\end{itemize}
+
+\begin{lemma}\label{lem:1.13}
+    \(\forall n\geq 0\): \begin{enumerate}
+        \item[(a)] \(p_t^{(n)}(x,y)\geq 0\forall x,y\in\cS\)
+        \item[(b)] \(\sum_{y\in\cS}p_t^{(n)}(x,y)\leq 1\forall x\in\cS,t\geq 0\)
+        \item[(c)] \(p_t^{(n+1)}(x,y)-p_t^{(n)}(x,y)\geq 0\forall x,y\in\cS,t\geq 0\)   
+    \end{enumerate}
+\end{lemma}
+
+
+\begin{proof}
+    By induction. \(n=0\) is clearly satisfied for (a),(b),(c).
+
+    (a) is obvious, since RHS are all positive terms.
+
+    (b) \begin{align*}
+        \sum_{y\in\cS} p_t^{(n+1)}(x,y)&=e^{-c(x)t}+\int_{0}^t ds e^{-c(x)(t-s)}\sum_{z\neq x}q(x,z)\underbrace{\sum_{y\in\cS}p_s^{(n)}(z,y)}_{\leq 1}\\
+        &\leq e^{-c(x)t}+\int_{0}^t ds e^{-c(x)(t-s)} \underbrace{\sum_{z\neq x} q(x,z)}_{=c(x)}\\
+        &=e^{-c(x)t}+ e^{-c(x)t}c(x)\int_0^t ds e^{c(x)s}=1
+    \end{align*}
+    (c) 
+    \begin{align*}
+        p_t^{(n+2)}(x,y)-p_t^{(n+1)}(x,y)&=\int_0^t e^{-c(x)(t-s)}\sum_{z\neq x} q(x,z)\underbrace{\left(p_s^{(n+1)}(z,y)-p_s^{(n)}(z,y)\right)}_{\geq 0}\geq 0\qedhere
+    \end{align*}
+\end{proof}
+
+\(\implies \forall x,y,t\) we have \(0\leq p_t^{0}(x,y)\leq p_t^{1}(x,y)\leq \dots\leq 1\).
+
+\(\implies\) there exists a limit, which we denote by \(p_t^*(x,y)\)
+\begin{definition}\label{def:1.14}
+    The limit \(p_t^{*}(x,y)\coloneqq \lim_{n\to\infty} p_t^{n}(x,y)\)
+    is called the \dhighlight{minimal solution of the KBE}.
+\end{definition}
+
+\dhighlight{Question:} Is \(p^*\) a transition function?
+
+\begin{theorem}\label{thm:1.15}
+    \(p^*\) satisfies:
+    \begin{enumerate}
+        \item[(a)] \(p_t^*(x,y)\geq 0\) 
+        \item[(b)] \(\sum_{y\in S}p_t^*(x,y)\leq 1\)
+        \item[(c)] The Chapman-Kolmogorov equation 
+        \item[(d)] satisfies (\ref{eq:A}) and thus the KBE
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    (a) and (b) follow directly from lemma \ref{lem:1.13}.
+
+    (d): Take the limits of \(p_t^{(n)}(x,y)\) and use monotone convergence.
+
+    (c): Define \(\Delta_t^{(n)}\coloneqq p_t^{(n+1)}(x,y)-p_t^{(n)}(x,y)\geq 0\).
+
+    Notice \(p_t^*(x,y)=\sum_{n\geq 0} \Delta_t^{(n)}(x,y)\) In lemma \ref{lem:1.17}:
+     \(Delta_{t+s}^{(n)}(x,y)=\sum_{z\in\cS}\sum_{k=0}^n\Delta_s^{(k)}(x,z)\Delta_t^{(n-k)}(z,y)\)
+     which then implies 
+    \begin{align*}
+        p_{t+s}^*(x,y)&=\sum_{n\geq 0}\Delta_{t+s}^{(n)}(x,y)=\sum_{z\in\cS}\sum_{n\geq 0}\sum_{k=0}^{n}\Delta_s^{(k)}(x,z)\Delta_t^{(n-k)}(z,y)\\
+        &=\sum_{z\in\cS}\underbrace{\sum_{k\geq 0}\Delta_s^{(k)}(x,z)}_{p_s^*(x,z)}\underbrace{\sum_{n=k}^\infty \Delta_{t}^{(n-k)}(z,y)}_{p_t^*(z,y)}\\
+        &=\sum_{z\in\cS} p_s^*(x,z)p_t^*(z,y)
+    \end{align*}
+    using monotone convergence.
+\end{proof}
+
+\begin{lemma}\label{lem:1.17}
+    \(\Delta_{t+s}^{(n)}(x,y)=\sum_{z\in\cS}\sum_{k=0}^n\Delta_s^{(k)}(x,z)\Delta_t^{(n-k)}(z,y)\)
+\end{lemma}
+
+\begin{proof}
+    Consider the Laplace transform of the equation w.r.t. \(s,t\), since the functions are all positive!
+    %Tofix
+    \[\int_0^\infty ds\int_0^\infty dt e^{-\lambda s}e^{-\mu t\Delta_{s+t}^{(n)}}\stackrel{?}{=}\sum_{z\in\cS}\sum_{k=0}^n\underbrace{\left[\int_0^\infty ds e^{-\lambda s}\Delta_s^{(k)}(x,z)\right]}_{\Psi_{k,\lambda}(x,z)}\underbrace{\left[\int_0^t e^{-\mu t}\Delta_{t}^{(n-k)}(z,y)\right]}_{\Psi_{n-k,\mu}(z,y)}\]
+    Define \(\int_0^t ds e^{-\lambda s}\Delta_s^{(n)}(x,y)=\Psi_{n,\lambda}(x,y)\).
+    Then for the RHS:\begin{align*}
+        &=\sum_{z\in \cS}\sum_{k=0}^n\Psi_{k,\lambda}(x,z)\Psi_{n-k}\mu(z,y)
+    \end{align*}
+    For the LHS:
+    \begin{align*}
+       \int_0^\infty ds ds \int_0^\infty dt e^{-\lambda (s+t)}e^{-t(\mu-\lambda)}\Delta_{\underbrace{s+t}_{\eqqcolon u}}^{(n)}(x,y)&=\int_0^\infty ds \int_s^\infty du e^{-\lambda u}e^{-\mu(u-s)}\Delta_{u}^{(n)}(x,y)\\
+        &=\int_0^\infty du \int_u^\infty ds e^{-(\lambda-\mu)s}e^{-\mu u}\Delta_{u}^{(n)}(x,y)=\frac{\Psi_{n,\mu}(x,y)-\Psi_{n,\lambda}(x,y)}{\lambda-\mu}\\
+        &\stackrel{?}{=}\sum_{k=0}^n\sum_{z\in\cS}\Psi_{k,\lambda}(x,y)\Psi_{n-k,\mu}(z,y)
+    \end{align*}
+    \marginnote{Above the second equation is wrong, but the skip from the RHS to the 3rd line is correct}
+    Another identity: \(\Psi_{n+1,\lambda}(x,y)=\sum_{z\neq x}\frac{q(x,z)}{\lambda + c(x)}\Psi_{n,\lambda}(z,y)\)
+
+    Define the matrix \(A_\lambda(x,y)\coloneqq \frac{q(x,y)}{\lambda + c(x)}1_{z\neq x}\), then
+    \begin{align*}
+        \Psi_{n,\lambda}=(A_\lambda)^n\Psi_{0,\lambda}
+    \end{align*}
+    where \(\Psi_{0,\lambda}(x,y)=\int_0^\infty ds e^{-\lambda s}p_s^{(1)}(x,y)\) 
+    and \(p_s^{(1)}(x,y)=\delta_{x,y}e^{-c(x)s}\).
+    Then \( \Psi_{0,\lambda}(x,y)=\delta_{x,y}\frac{1}{\lambda + c(x)}\).
+
+    \(\implies\)
+    \marginnote{Reminder: For matrices \(X^n-Y^n=(X-Y)X^{n-1}+ Y(X-Y)X^{n-1}+\dots+Y^{n-1}(X-Y)\), since they don't commute}
+    \begin{align*}
+        \frac{\Psi_{n,\mu}-\Psi_{n,\lambda}}{\lambda-\mu} &= \frac{(A_\mu)^n\Psi_{0,\mu}-(A_\lambda)^n \Psi_{0,\lambda}}{\lambda-\mu}\\
+        &=\frac{(A_\lambda)^n (\Psi_{0,\mu}-\Psi_{0,\lambda})}{\lambda-\mu}\sum_{k=0}^{n-1} (A_\lambda)^k\frac{A_\mu-A_\lambda}{\lambda-\mu}A^{n-k-1}\Psi_{0,\mu}
+    \end{align*}
+    
+    \begin{align*}
+        \frac{\Psi_{0,\mu}-\Psi_0,\lambda}{\lambda-\mu}(x,y)=\frac{\delta_{x,y}}{\lambda-\mu}\left(\frac{1}{c(x)+\mu}-\frac{1}{c(x)+\lambda}\right)=\Psi_{0,\mu}(x,y)\cdot \Psi_{0,\lambda}(x,y).
+    \end{align*}
+    Similarly
+    \begin{align*}
+        \frac{A_\mu-A_\lambda}{\lambda-\mu}(x,y)=\left(\Psi_{0,\lambda}A_\mu\right)(x,y)
+    \end{align*}
+    Then 
+    \begin{align*}
+        \frac{(A_\lambda)^n (\Psi_{0,\mu}-\Psi_{0,\lambda})}{\lambda-\mu}\sum_{k=0}^{n-1} (A_\lambda)^k\frac{A_\mu-A_\lambda}{\lambda-\mu}A^{n-k-1}\Psi_{0,\mu} &= [(A_\lambda)^n\Psi_{0,\mu}](x,y)+\sum_{k=0}^{n-1}\sum_{z}\underbrace{\left[A_\lambda^k\Psi_{0,\lambda}\right]}_{=\Psi_{k,\lambda}(x,z)}(x,z)\underbrace{\left(A_\mu^{n-k}\Psi_{0,\mu}\right)(z,y)}_{=\Psi_{n-k,\mu}(z,y)}\\
+        &=\sum_{k=0}^n \sum_{\in\cS} \Psi_{k,\lambda}(x,z)\Psi_{n-k,\mu(z,y)}\qedhere
+    \end{align*}
+
+\end{proof}
