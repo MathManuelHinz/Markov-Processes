@@ -417,3 +417,146 @@ We use proposition \ref{prop:1.12} to show existence of positive solution of the
     \end{align*}
 
 \end{proof}
+
+\beginlecture{04}{17.10.2024}
+
+\begin{theorem}\label{thm:1.19}
+    \begin{enumerate}
+        \item[(a)] If \(p_t(x,y)\) is a non-negative solution of the KBE \ref{eq:kolmogorov_backwards} with 
+                   \(p_0(x,y)=\delta_{x,y}\implies\) \(p_t(x,y)\geq p_t^*(x,y)\)
+        \item[(b)] If \(\sum_{y\in \cS}p_t^*(x,y)=1,\forall x\in\cS\implies p_t^*(x,y)\) is the unique transition function satisfying the KBE    
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}
+    \dhighlight{(a):} By induction: \(p_t(x,y)\geq p_t^{(n)}(x,y)\forall n\).
+    
+    For \(n=0\) \(p_t(x,y)\geq 0 =p_t^{(0)}(x,y)\).
+
+    \begin{align*}
+        p_t^{(n+1)}(x,y)&=\delta_{x,y}e^{-c(x)t}+\int_0^tds e^{-c(x)(t-s)}\sum_{z\neq x}q(x,z)\underbrace{p_s^{(n)}(x,y)}_{\leq p_s(x,y)}\\
+        &\stackrel{p_t \text{satisfies KBE}}{\leq} p_t(x,y)
+    \end{align*}
+
+    \dhighlight{(b)}: \begin{align*}
+        &=\sum_{y\in \cS}\underbrace{\left(p_t^*(x,y)-p_t^*(x,y)\right)}_{\geq 0}\geq 0\\
+        &=\underbrace{\sum_{y\in\cS}p_t(x,y)}_{=1}-\underbrace{\sum_{y\in\cS} p_t^*(x,y)}_{=1}\\
+        &\implies 0 \geq \sum_{y\in \cS}\left(p_t^*(x,y)-p_t^*(x,y)\right)\geq 0\\
+        &\implies p_t(x,y)=p_t^*(x,y)\qedhere
+    \end{align*}
+\end{proof}
+
+\begin{example}
+    \(\cS=\{0,1,\dots,\},q(i,j)=\begin{cases}
+        \beta_i & j=i+1\\
+        -\beta_i & j=i\\
+        0 & \text{otherwise}
+    \end{cases}\) for some positive \(\beta_i\).
+    One shows \(\sum_{j\in\cS} p_t^*(i,j)=1\forall t,i\in S\iff \sum_{k\geq 0}\frac{1}{\beta_k}<\infty\).
+
+    What happens if \(\sum_{k\geq 0}\frac{1}{\beta_i}=\infty\)? Consider \(N(t)=\#\) of jumps before time \(t\),then 
+    \(\bP(n(t)=\infty)>0\).
+\end{example}
+
+\subsection{The probabilistic construction}
+
+\begin{lemma}\label{lem:1.21}
+    Let \(X(t)\) be a continuous time M.C. and \(\tau\coloneqq \inf\{t:X(t)\neq X(0)\}\). Then there exists \(c(x)=[0,\infty]\) s.t. 
+    \(\bP(\tau>t)=e^{-{c(x)t}}\)
+\end{lemma}
+
+\begin{proof}
+    Use Markov property with \(Y=1_{X(r)=x,0\leq r\leq t-s}\):
+    \begin{align*}
+        \bP^x\left(X(r)=x,s\leq r\leq t\mid \cF_s\right)&=\bP^{X(s)}(\tau>t-s)=(\star)\\
+        \bE^x(1_{\tau>s}\cdot \bP^x(X(r)=x,s\leq r \leq t\mid \cF_s))&=\bP^x(\tau>t)\\
+        \bE^x(1_{\tau>s}\cdot \bP^x(X(r)=x,s\leq r \leq t\mid \cF_s))&\stackrel{(\star)}{=}\bE^x\left(1_{\tau>s}\bP^{X(s)}(\tau>t-s)\right)\\
+        &=\bP^x(\tau>s)\bP^x(\tau>t-s)\\
+        &\implies \bP^x(\tau>t)=\bP^x(\tau>s)\bP(\tau>t-s)
+    \end{align*}
+    Either \(\bP^x(\tau>t)=0\forall t\implies c(x)=\infty\) (jump before \(t\)) or \(\bP^x(\tau>t)>0\forall t\).
+    Define \(f(t)\coloneqq -\ln\bP^x(\tau >t)\) with \(f(0)=0\) \(\implies f(t) \geq 0\).
+    and  \(f(t)=f(s)+f(t-s)\implies f(t)=k\cdot t\).
+\end{proof}
+
+\dhighlight{Idea:} Divide the waiting times (which are exponetially distributed \(\sim \exp(c(x)),\exp(c(y)),\dots\)) and the \dhighlight{jumps}.
+The jumps are given by a discrete time M.C..  
+
+\dhighlight{(1)} Discrete time Markov chain \(\{Z_n,n\geq 0\}\) with transition matrix:
+\[P=(p(x,y))_{x,y\in\cS}\]
+If \(c(x)=0\):\[ p(x,y)=\begin{cases}
+   1&x=y\\ 
+    0&x\neq y
+\end{cases}\]
+
+If \(c(x)>0\):
+\[p(x,y)\begin{cases}
+    \frac{q(x,y)}{c(x)} & x\neq y\\
+    0 & x=y
+\end{cases}.\]
+
+\dhighlight{(2)} Initial distribution: \(\pi=(\pi(x))_{x\in\cS}\) is a probability measure.
+
+\dhighlight{(3)} Family of \dhighlight{independent} exponetially distributed waiting timesindependent \(\tau_{x,i}\sim\exp(c(x)),x\in\cS,i\geq 1.\)
+
+If \(c(x)=0\to \tau_{x,i}=\infty\).
+
+The joint distribution of \(Z_n\) are given by 
+\[\bP(Z_0=x_0,\dots,Z_n=x_n)=\pi(x_0)p(x_0,x_1)\cdot\dots\cdot p(x_{n-1},x_n)\]
+\remark{Careful, the waiting times are only independent given the positions of \(Z_n\)}
+\begin{align*}
+    \bP(Z_0=x_0,Z_1=x_1,\dots,Z_n=x_n,\tau_0>t_0,\tau_1>t_1,\dots,\tau_n>t_n) & =\pi(x_0)p(x_0,x_1)\cdot \dots\cdot p(x_{n-1},x_n)e^{-c(x_0)t_0}\cdot\dots\cdot e^(-c(x_n)t_n)
+\end{align*}
+where \(tau_k\) is the waiting time of the \((k-1)\)th jump.\marginnote{This should be \(k+1\), otherwise what does \(\tau_{-1}\) mean?}
+
+Denote by \(N(t)\coloneqq \begin{cases}
+    \min(n\geq 0)\mid \tau_0+\tau_1+\dots+\tau_n>t & \sum_{k\geq 0}\tau_k>t \\
+    \infty & \text{otherwise}
+\end{cases}\)
+
+\(N(0)=0\). 
+\begin{definition}\label{def:1.22}
+    We define the continuous time Markov chain \(X(t)\) by 
+    \(X(t)=Z_{N(t)}\) on \(\{N(t)<\infty\}\).
+\end{definition}
+
+\begin{proposition}\label{prop:1.23}
+    \begin{enumerate}
+        \item[(a)] \(p_t^{(n)}(x,y)=\bP(X(t)=y,N(t)<n\mid X(0)=x)\)
+        \item[(b)] \(p_t^*(x,y)=\bP(X(t)=y,N(t)<\infty\mid X(0)=x)\)
+        \item[(c)] \(\sum_{y\in\cS}p_t^*(x,y)=\bP(N(t)<\infty\mid X(0)=x)\)
+    \end{enumerate}
+\end{proposition}
+
+
+\begin{proof}
+    (b) and (c) follow from (a), therefore only (a) is proofed.
+
+    \dhighlight{(a)}: By deriving the same iteration as \(p_t^{(+1)}(x,y)=\dots\).
+    For \(c(x)>0\)
+    Condition on \(\tau_0,Z_0,Z_1:\)
+    \begin{align*}
+        \bP(X(t)=y,N(t)<n+1\mid \tau_0=s,Z_1=z,\underbrace{Z_0}_{=X(0)}=x) &=\begin{cases}
+            \delta_{x,y}& s>t\\
+            \bP(X(t-s)=y,N(t-s)<n\mid X(0)=z) & s < t
+        \end{cases}
+    \end{align*}
+    \begin{align*}
+        &\bP(X(t)=y,N(t)<n+1\mid X(0)=x) \\
+        &= \int_0^\infty \sum_{z\in \cS} \bP(X(t)=y,N(t)<n+1\mid \tau_0=s,Z_1=z,X(0)=x)\cdot \underbrace{\bP(\tau_0\in ds,Z_1=z\mid X(0)=x)}_{\text{density: }p(x,z)e^{-c(x)s}c(x)}\\
+        &=\int_t^\infty ds \delta_{x,y}\underbrace{\cdot\sum_{z\in \cS} p(x,z)}_{=1}e^{-c(x)s}c(x)+\int_0^tds \sum_{z\in\cS}\bP(X(t-s)=y,N(t)<n\mid X(0)=z)p(x,z)c(x)e^{-c(x)s}\\
+        &=\delta_{x,y}e^{-c(x)t}+\int_0^t ds e^{-c(x)\overbrace{s}^{t-s}}\sum_{z\in\cS\setminus\{x\}} \bP(X(\overbrace{t-s}^{s})=y,N(t)<n\mid X(0)=z)q(x,z)\\
+        &\stackrel{s\mapsto t-s}{=}\delta_{x,y}e^{-c(x)t}+\int_0^t ds e^{-c(x)(t-s)}\sum_{q(x,z)}\bP(X(s)=y,N(s)<n\mid X(0)=z)
+    \end{align*}
+    \(\implies\) Same I.C. and recursion as for \(p_t^{(n)}(x,y)\). 
+\end{proof}
+
+\begin{theorem}\label{thm:1.24}
+    The following are equivalent:
+    \begin{enumerate}
+        \item[(a)] The minimal solution \(p_t^*(x,y)\) is stochastic
+        \item[(b)] \(\bP(N(t)<\infty)=1\forall t\)
+        \item[(c)] \(\sum_{n\geq 0}\tau_n=\infty\as\)
+        \item[(d)] \(\sum_{n\geq 0}\frac{1}{Z(n)}=\infty\as\)    
+    \end{enumerate}
+\end{theorem}
